@@ -54,7 +54,7 @@ impl NullBlkDevice {
     ) -> Result<GenDisk<Self>> {
         let tagset = Arc::pin_init(TagSet::new(1, 256, 1), GFP_KERNEL)?;
 
-        let queue_data = Box::new(QueueData { irq_mode }, GFP_KERNEL)?;
+        let queue_data = Box::pin_init(QueueData { irq_mode }, GFP_KERNEL)?;
 
         gen_disk::GenDiskBuilder::new()
             .capacity_sectors(capacity_mib << (20 - block::SECTOR_SHIFT))
@@ -65,6 +65,7 @@ impl NullBlkDevice {
     }
 }
 
+#[pin_data]
 struct QueueData {
     irq_mode: IRQMode,
 }
